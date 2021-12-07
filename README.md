@@ -75,6 +75,11 @@ fast_calcium_imaging('C:\Users\peter\data\dbdA08a-optogenetics\1\')
 ```
 ## Analysis
 Now you can use this python repo to analyze the data and make figures.
+
+To get additional information on how to use any of these functions, use ```help``` in an interactive python session. For example:
+``` 
+help(help(gcamp_analysis.analysis.StimAvg))
+```
 ### Import gcamp_analysis into python
 ```python
 import gcamp_analysis
