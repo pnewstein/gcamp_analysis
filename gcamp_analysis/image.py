@@ -32,6 +32,8 @@ def load_imagej_tiff(path: Path) -> Tuple[np.ndarray, Dict[str, np.ndarray], Dic
     """
     im = AICSImage(path)
     rois = roiread(path)
+    if len(rois) == 0:
+        raise ValueError("could not load any ROIs")
     roi_masks: Dict[str, np.ndarray] = {}
     # accept both z stacks and T stacks
     if im.shape[0] > 1:
@@ -58,9 +60,8 @@ def load_imagej_tiff(path: Path) -> Tuple[np.ndarray, Dict[str, np.ndarray], Dic
         )
         roi_masks[roi.name] = mask
     # get metadata
+    tf = TiffFile(path)
     with TiffFile(path) as tiff:
-        print(tiff.imagej_metadata)
-        quit()
         info = tiff.imagej_metadata["Info"]
 
     metadata = {
