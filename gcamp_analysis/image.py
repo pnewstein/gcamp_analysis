@@ -33,6 +33,13 @@ def load_imagej_tiff(path: Path) -> Tuple[np.ndarray, Dict[str, np.ndarray], Dic
     im = AICSImage(path)
     rois = roiread(path)
     roi_masks: Dict[str, np.ndarray] = {}
+    # accept both z stacks and T stacks
+    if im.shape[0] > 1:
+        stack_lbl = "T"
+        load_kwargs = {"Z": 0}
+    else:
+        stack_lbl = "Z"
+        load_kwargs = {"T": 0}
     xdim, ydim = im.shape[4], im.shape[3]
     for roi in rois:
         if roi.roitype != ROI_TYPE.RECT:
@@ -51,12 +58,14 @@ def load_imagej_tiff(path: Path) -> Tuple[np.ndarray, Dict[str, np.ndarray], Dic
         )
         roi_masks[roi.name] = mask
     # get metadata
-    with TiffFile(path)  as tiff:
+    with TiffFile(path) as tiff:
+        print(tiff.imagej_metadata)
+        quit()
         info = tiff.imagej_metadata["Info"]
 
     metadata = {
         line.split(" = ")[0]: line.split(" = ")[1]
         for line in info.split("\n")[:-1]
     }
-    # imagej saves R as Z
-    return im.get_image_data("CZYX", T=0), roi_masks, metadata
+    # 
+    return im.get_image_data(f"C{stack_lbl}YX", **load_kwargs), roi_masks, metadata

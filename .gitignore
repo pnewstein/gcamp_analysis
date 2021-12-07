@@ -4,3 +4,4 @@ gcamp_analysis.egg-info/*
 gcamp_analysis/.dev/.run
 *.png
 **/__pycache__/*
+scripts/.dev/.run
