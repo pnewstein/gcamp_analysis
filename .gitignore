@@ -1,0 +1,6 @@
+.dev/.run
+.vscode/*
+gcamp_analysis.egg-info/*
+gcamp_analysis/.dev/.run
+*.png
+**/__pycache__/*

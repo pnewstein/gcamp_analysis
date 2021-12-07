@@ -1,0 +1,1 @@
+This is the python package for ```gcamp_analysis```. The code in here is the most high quality in the repo, and has the greatest chance of being useful to others
