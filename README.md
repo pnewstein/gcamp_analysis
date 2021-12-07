@@ -45,7 +45,7 @@ if you don't get ```ModuleNotFoundError```, the install was successful!
 }
 ```
 - Run the matlab registration algorithm and save the files as a .mat h5 file. This takes a very long time, so I did this step in bulk with the command 
-```
+```matlab
 prepare_bulk("C:\Users\peter\data\dbdA08a-optogenetics\", [1:3])
 ```
 Assuming the structure of ```C:\Users\peter\data\dbdA08a-optogenetics\``` is something like
@@ -70,7 +70,7 @@ Assuming the structure of ```C:\Users\peter\data\dbdA08a-optogenetics\``` is som
 │   └── stim.json
 ```
 - Use matlab to create the ROIs. This does require user interaction, so I did this one at a time with the matlab command
-```
+```matlab
 fast_calcium_imaging('C:\Users\peter\data\dbdA08a-optogenetics\1\')
 ```
 ## Analysis
