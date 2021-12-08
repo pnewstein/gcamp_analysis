@@ -55,46 +55,43 @@ Now you can use this python repo to analyze the data and make figures.
 
 To get additional information on how to use any of these functions, use ```help``` in an interactive python session. For example:
 ``` 
-help(help(gcamp_analysis.analysis.Experiment))
+help(help(Experiment))
 ```
 ### Import gcamp_analysis into python
 ```python
-import gcamp_analysis
+from gcamp_analysis.analysis import Experiment
+from gcamp_analysis.plot import df_f_figs
 ```
 ### Make an Experiment object from the tiff file
 ```python
-registered_path = Path(r"C:\Users\peter\data\dbdA08a-optogenetics\1\data\211109LexA_dbdGal4_lacZ_LexAopGCaMP6m_UASChrim_L2_Animal1_-ATR_registered.mat")
-# the following line requires lot of ram
-stack = gcamp_analysis.matlab_layer.load_stack(registered_path)
-gcamp_analysis.save_projection(Path("projection.png"), stack)
+path = r"C:\Users\peter\data\dbdA08a-optogenetics\data\undrifted\UNDRIFTED211115LexA_dbdGal4_lacZ_LexAopGCaMP6m_UASChrim_L2_Animal6_+ATR.tif"
+# the following line takes some time
+exp = Experiment.fromTif(path) 
+# so lets save the output to a file
+exp_path = r"C:\Users\peter\data\dbdA08a-optogenetics\data\exps\15+UNDRIFTED211115LexA_dbdGal4_lacZ_LexAopGCaMP6m_UASChrim_L2_Animal6_+ATR.tif.pickle"
+
 ```
-### Load the data from a stim_avg
-```python
-from pathlib import Path
-stim_avg_path = Path(r"C:\Users\peter\data\dbdA08a-optogenetics\1\data\211109LexA_dbdGal4_lacZ_LexAopGCaMP6m_UASChrim_L2_Animal1_-ATR_stim_avg.mat")
-stim_meta, stim_avg, traces = gcamp_analysis.matlab_layer.load_stim_avg(stim_avg_path)
-```
+
 ### Make the traces figure
 ```python
 import matplotlib
 matplotlib.style.use("dark_background")
 from matplotlib import pyplot as plt
-from gcamp_analysis.plot import df_f_figs
 # make the figure and axes in advance
 fig, axs = plt.subplots(3, 1, sharex=True, tight_layout=True)
 # plot all traces and stimulus on axs
-color = df_f_figs.C_ATR_MINUS
+color = df_f_figs.C_ATR_PLUS
 df_f_figs.plot_trace_on_ax(
-    axs[0], axs[1], axs[2], traces, stim_meta, stim_color=color
+    axs[0], axs[1], axs[2], exp, atr_status=True
 )
 # show the figure
-fig.show()
+plt.show()
 ```
 ### Make the stim average figure
 ```python
 # make the figure and axes in advance
 fig, ax = plt.subplots()
 # plot the figure
-df_f_figs.plot_stim_avg_on_ax(ax, stim_meta, stim_avg)
+df_f_figs.plot_stim_avg_on_ax(ax, exp, atr_status=True)
 fig.show()
 ```
