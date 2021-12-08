@@ -2,7 +2,6 @@
 This script makes synthetic data to compare to the atr- control
 """
 from pathlib import Path
-from typing import Tuple
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -18,7 +17,7 @@ ATR_MINUS_PATH = Path("/mnt/c/Users/peter/data/dbdA08a-optogenetics/data/exps/11
 
 def prepare_experiment():
     """
-    Creates the Eperiment from tiff
+    Creates the Experiment from tiff
     """
     img_path = Path("/mnt/c/Users/peter/data/dbdA08a-optogenetics/data/undrifted/UNDRIFTED211115LexA_dbdGal4_lacZ_LexAopGCaMP6m_UASChrim_L2_Animal2_-ATR.tif")
     exp = Experiment.fromTif(img_path)
@@ -30,20 +29,22 @@ def simulate_data(exp) -> Experiment:
     generate synthetic data based on exp
     """
 
-    t, raw_f, _ = exp.get_only_traces().get_stim_f(stim_meta=exp.stim_meta)
+    t_with_nans, raw_f, _ = exp.get_only_traces().get_stim_f(stim_meta=exp.stim_meta)
     nan_mask = np.logical_not(np.isnan(raw_f))
-    t = t[nan_mask]
+    t_with_nans = t_with_nans + (raw_f * 0)
+    t = t_with_nans[nan_mask]
     raw_f = raw_f[nan_mask]
 
     m, b = np.polyfit(t, np.log(raw_f), 1)
-    log_fit = np.exp(m*t + b)
+    log_fit = np.exp(m*t_with_nans + b)
 
     np.random.seed(1000)
-    noise = np.cumsum(np.random.normal(size=len(t)))
+    noise = np.cumsum(np.random.normal(size=len(t_with_nans)))
     noise = filtfilt(*butter(4, .005, 'high'), noise)
     noise = noise * np.std(raw_f) / (2*np.std(noise))
     
-    sim = log_fit + noise
+    # reconnect all nans
+    sim = (log_fit + noise)[nan_mask]
 
     out_traces = Traces(sim)
     return Experiment("simulated", exp.stim_meta, {"seg": out_traces})
