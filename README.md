@@ -1,17 +1,26 @@
 # GCaMP analysis
 Some code that analyzes calcium imaging data.
 
-This branch is for use with matlab. The main branch is for use with imagej
-
-One thing this code has to offer, is an easier way to programmatically combine figures using matplotlib. Also, this code has a way to show traces with the correct gaps for missing data during the stimuli. This code also takes less user interaction. This makes it easier to use with large files.
+This branch is for use with the imagej plugin moco. The main branch is for use with imagej
 
 # Installation
 ## Dependencies
-- Instal MatLab and find the code written by Brandon Mark plus my edits.
-- Make sure you have [git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
+- [Fiji](https://imagej.net/software/fiji/downloads) (it's just image j)
 - Install [python](https://www.python.org/downloads/) and [pip](https://pip.pypa.io/en/stable/installation/)
 
-## Installing with pip
+### Installing moco
+Unfortunately, moco is not as straight forward to install. Follow the instructions on https://github.com/NTCColumbia/moco .
+- clone or otherwise download the repo
+- navigate to ```moco/03-18-2016_release/jars/```
+- paste all the ```.jar``` files into your imagej plugins directory. On my system, this directory is located at ```C:\Users\peter\bin\Fiji.app\jars```
+- Launch imagej
+- drag the file ```moco/03-18-2016_release/moco_.jar``` to imagej
+- imagej should install the plugin then ask to restart
+- after the restart, you should be able to find moco in the plugins menu, or by using the imagej search bar
+
+
+## Installing gcamp_analysis with pip
+### Download through the command line
 - clone the repo (this will copy the files into a new folder called "gcamp_analysis"): 
 ```
 git clone https://github.com/pnewstein/gcamp_analysis
@@ -20,10 +29,8 @@ git clone https://github.com/pnewstein/gcamp_analysis
 ```
 cd gcamp_analysis
 ```
-- switch to this branch:
-```
-git checkout matlab
-```
+### Or you can just use the GitHub gui to do the same
+### Install with pip
 - install *GCaMP analysis* with python dependencies
 ```
 python -m pip install -e .
@@ -35,56 +42,26 @@ import gcamp_analysis
 if you don't get ```ModuleNotFoundError```, the install was successful!
 
 # Usage
-## Preparation
-- First, use imagej or some other tool to convert the CZI to a tiff containing the frames you want to analyze. *This step may not be necessary with minor changes to the matlab code.* You can use use "show info" command to get all of the metadata you need to create ```stim.json``` which should look something like this 
-```json
-{
-    "startIndex": 15,
-    "Iterations": 3,
-    "Repetition": 30
-}
-```
-- Run the matlab registration algorithm and save the files as a .mat h5 file. This takes a very long time, so I did this step in bulk with the command 
-```matlab
-prepare_bulk("C:\Users\peter\data\dbdA08a-optogenetics\", [1:3])
-```
-Assuming the structure of ```C:\Users\peter\data\dbdA08a-optogenetics\``` is something like
-```
-├── 1
-│   ├── 211109LexA_dbdGal4_lacZ_LexAopGCaMP6m_UASChrim_L2_Animal1_-ATR.czi
-│   ├── data
-│   ├── imgs
-│   ├── shrunk.tiff
-│   └── stim.json
-├── 2
-│   ├── 211109LexA_dbdGal4_lacZ_LexAopGCaMP6m_UASChrim_L2_Animal2_+ATR.czi
-│   ├── data
-│   ├── imgs
-│   ├── shrunk.tiff
-│   └── stim.json
-├── 3
-│   ├── 211112LexA_dbdGal4_lacZ_LexAopGCaMP6m_UASChrim_L2_Animal1_-ATR.czi
-│   ├── data
-│   ├── imgs
-│   ├── shrunk.tiff
-│   └── stim.json
-```
-- Use matlab to create the ROIs. This does require user interaction, so I did this one at a time with the matlab command
-```matlab
-fast_calcium_imaging('C:\Users\peter\data\dbdA08a-optogenetics\1\')
-```
-## Analysis
+## MotionCorrecting with imagej
+- First, load the data into imagej (if your files are big, this could take a few seconds)
+- drag the file [one_channel_moco_wrapper.ijm](imagej_macros/one_channel_moco_wrapper.ijm) onto imagej. This should open an editor where you can also run the macro
+- click run
+- in a couple of minutes, you should see a drift corrected stack as well as a maximum projection
+- Use the rectangle tool to draw a roi
+- save the undrifted file to a directory containing all of your undrifted files
+
+## Analysis with Python
 Now you can use this python repo to analyze the data and make figures.
 
 To get additional information on how to use any of these functions, use ```help``` in an interactive python session. For example:
 ``` 
-help(help(gcamp_analysis.analysis.StimAvg))
+help(help(gcamp_analysis.analysis.Experiment))
 ```
 ### Import gcamp_analysis into python
 ```python
 import gcamp_analysis
 ```
-### Make the maximum intensity projection of the drift corrected stack
+### Make an Experiment object from the tiff file
 ```python
 registered_path = Path(r"C:\Users\peter\data\dbdA08a-optogenetics\1\data\211109LexA_dbdGal4_lacZ_LexAopGCaMP6m_UASChrim_L2_Animal1_-ATR_registered.mat")
 # the following line requires lot of ram
