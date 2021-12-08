@@ -86,6 +86,7 @@ import gcamp_analysis
 ```
 ### Make the maximum intensity projection of the drift corrected stack
 ```python
+from pathlib import Path
 registered_path = Path(r"C:\Users\peter\data\dbdA08a-optogenetics\1\data\211109LexA_dbdGal4_lacZ_LexAopGCaMP6m_UASChrim_L2_Animal1_-ATR_registered.mat")
 # the following line requires lot of ram
 stack = gcamp_analysis.matlab_layer.load_stack(registered_path)
@@ -93,7 +94,6 @@ gcamp_analysis.save_projection(Path("projection.png"), stack)
 ```
 ### Load the data from a stim_avg
 ```python
-from pathlib import Path
 stim_avg_path = Path(r"C:\Users\peter\data\dbdA08a-optogenetics\1\data\211109LexA_dbdGal4_lacZ_LexAopGCaMP6m_UASChrim_L2_Animal1_-ATR_stim_avg.mat")
 stim_meta, stim_avg, traces = gcamp_analysis.matlab_layer.load_stim_avg(stim_avg_path)
 ```
