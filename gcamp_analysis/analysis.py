@@ -270,7 +270,7 @@ class Experiment:
         path.write_bytes(pickle.dumps(self))
         
     @classmethod
-    def load(cls, path: PathLike):
+    def load(cls, path: PathLike) -> "Experiment":
         """
         loads an Experiment saved with save method
         """
@@ -278,7 +278,8 @@ class Experiment:
         return pickle.loads(path.read_bytes())
 
     def get_stim_avg(self, roi_name: Optional[str] = None, 
-                     channel=0, prestim_frames: Optional[int] = None):
+                     channel: Optional[int] = None,
+                     prestim_frames: Optional[int] = None):
         """
         Gets a StimAvg object for a roi, given our stim_meta
         Args:
@@ -289,6 +290,8 @@ class Experiment:
             F0. defaults to 3
         """
         # set default args
+        if channel is None:
+            channel = 0
         roi_names = self.roi_names
         roi_names.sort()
         if roi_name is None:
@@ -322,3 +325,13 @@ class Experiment:
             post_stim_dffs[stim_ind] = (post_stim_f - f0) / f0
         # turn the dff arrays from sums to means
         return StimAvg(prestim_dffs, post_stim_dffs)
+
+    def get_only_traces(self) -> Traces:
+        """
+        Gets the only traces object. Raises error if there is more than 
+        one traces in the traces dict
+        """
+        if len(self.roi_names) != 1:
+            raise ValueError("there are more than one traces!")
+        return next(iter(self.traces_dict.values()))
+

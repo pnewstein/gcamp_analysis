@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 
-from ..analysis import StimAvg, StimMeta, Traces
+from ..analysis import StimAvg, StimMeta, Traces, Experiment
 from .scalebar import add_scalebar
 
 # typedefs
@@ -24,11 +24,22 @@ ZERO_LINE_ALPHA = .5
 C_3d: Color = 0.12, 0.53, 0.9 #(0, 0, 0.88) # blue
 C_4d: Color = 1, 0.76, 0.03 #(0.74, 0.02, 0.27) # maroon
 
-def plot_stim_avg_on_ax(ax, stim_meta: StimMeta, stim_avg: StimAvg,
+def plot_stim_avg_on_ax(ax, experiment: Experiment,
+                        roi_name=None,
+                        chan=None,
                         atr_status=True):
     """
     Plots the stim_avg error bar plot on axs returning ax
+
+    Args:
+    ax: that axis on which to plot
+    experiment (Experiment): the experiment to analyze
+    atr_status: whether the prep is ATR+
+    roi_name: the name of the roi to analyze defaluts to the first
+    chan: the channel to analyze. defaluts to 0
     """
+    stim_meta = experiment.stim_meta
+    stim_avg = experiment.get_stim_avg(roi_name=roi_name, channel=chan)
     if atr_status:
         c_stim = C_ATR_PLUS
     else:
@@ -102,13 +113,32 @@ def plot_stim_avg(stim_meta: StimMeta, stim_avg: StimAvg,
     return fig, ax
 
 def plot_trace_on_ax(stim_ax, f_ax, df_f_ax,
-                     traces: Traces, stim_meta: StimMeta, 
-                     stim_color: Optional[Color] = None,
+                     experiment: Experiment, 
+                     atr_status=False,
+                     roi_name: Optional[str] = None,
                      chan=0):
     """
     Plots a nice sample trace on axs
+
+    Args:
+    stim_ax: the axis on which to plot the stimulus
+    f_ax: the axis on which to plot the raw fluorescence
+    df_f_ax: the axis on which to plot the delta F / F
+    experiment (Experiment): the experiment to analyze
+    atr_status: whether the prep is ATR+
+    roi_name: the name of the roi to analyze defaluts to the first
+    chan: the channel to analyze. defaluts to 0
     """
-    if stim_color is None: stim_color = "m"
+
+    if atr_status:
+        stim_color = C_ATR_PLUS
+    else:
+        stim_color = C_ATR_MINUS
+    if roi_name is None:
+        traces = experiment.get_only_traces()
+    else:
+        traces = experiment.traces_dict[roi_name]
+    stim_meta = experiment.stim_meta
     t, f, df_f = traces.get_stim_f(stim_meta, chan=chan)
     # plot stim
     if stim_ax is not None:
