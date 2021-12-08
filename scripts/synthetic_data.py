@@ -60,7 +60,7 @@ def compare_traces(real, simulated):
     df_f_figs.plot_trace_on_ax(axs[0, 1], axs[1, 1], axs[2, 1], experiment=simulated)
     # format
     axs[0, 0].set_title("ATR-")
-    axs[0, 1].set_title("Simulated")
+    axs[0, 1].set_title("Synthetic")
     fig.set_size_inches(FULL_SCREEN)
     save_fig(IMG_DIR / "sim_traces", fig)
 
@@ -73,7 +73,7 @@ def compare_stim_avgs(real, simulated):
     df_f_figs.plot_stim_avg_on_ax(axs[1], simulated)
     # format
     axs[0].set_title("ATR-")
-    axs[1].set_title("Simulated")
+    axs[1].set_title("Synthetic")
     fig.set_size_inches(FULL_SCREEN)
     save_fig(IMG_DIR / "sim_stim_avg", fig)
 
