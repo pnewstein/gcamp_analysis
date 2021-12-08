@@ -1,6 +1,7 @@
 """
 Some figures for my rotation talk
 """
+# ToDo: rewrite this code for moco processing
 from typing import Optional, Tuple
 
 import matplotlib.pyplot as plt
